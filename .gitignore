@@ -1,0 +1,11 @@
+.venv/
+dist/
+site/
+_share_app.py
+gtlab-*.whl
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+__marimo__/
+.DS_Store

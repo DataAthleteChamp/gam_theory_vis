@@ -1,0 +1,47 @@
+[project]
+name = "gtlab"
+version = "0.1.0"
+description = "An interactive visualiser and simulator for game theory, built for a Game Theory in Electricity Markets course."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+keywords = ["game-theory", "nash-equilibrium", "education", "electricity-markets", "simulation"]
+
+# Core stays PURE PYTHON so the whole app can run in a browser via Pyodide/WASM.
+dependencies = [
+    "numpy>=1.26",
+    "scipy>=1.11",
+    "nashpy>=0.0.41",
+]
+
+[project.optional-dependencies]
+# Everything needed to run the interactive app locally.
+app = [
+    "marimo>=0.9",
+    "matplotlib>=3.8",
+]
+# Iterated-game tournaments (pure python, browser safe).
+tournaments = [
+    "axelrod>=4.13",
+]
+# n-player and extensive-form solving. NOT browser safe: ships binary wheels
+# and has no cp314 wheel, so it must stay optional.
+advanced = [
+    "pygambit>=16.1",
+]
+dev = [
+    "pytest>=8.0",
+]
+
+[project.scripts]
+gtlab = "gtlab.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/gtlab"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
