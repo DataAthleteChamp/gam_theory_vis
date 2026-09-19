@@ -15,12 +15,10 @@ the metadata at it by relative URL.
 
 from __future__ import annotations
 
-import re
 import shutil
 import subprocess
 import sys
 from pathlib import Path
-
 ROOT = Path(__file__).resolve().parent.parent
 APP = ROOT / "src" / "gtlab" / "app" / "app.py"
 OUT = ROOT / "site"
@@ -61,17 +59,27 @@ def main() -> int:
     wheel = build_wheel()
     print(f"built {wheel.name}")
 
-    # Point the PEP 723 metadata at the wheel we just built, by relative URL.
+    # The app source carries no PEP 723 block on purpose: locally it would make
+    # marimo sandbox the run and install the unrelated PyPI package of the same
+    # name. The browser build genuinely needs one, so add it here, pointing at
+    # the wheel we just built.
     source = APP.read_text(encoding="utf-8")
-    patched = re.sub(
-        r'^#\s+"gtlab",\s*$',
-        f'#     "gtlab @ ./{wheel.name}",',
-        source,
-        count=1,
-        flags=re.MULTILINE,
+    metadata = (
+        "# /// script\n"
+        '# requires-python = ">=3.11"\n'
+        "# dependencies = [\n"
+        '#     "numpy",\n'
+        '#     "scipy",\n'
+        '#     "nashpy==0.0.43",\n'
+        '#     "marimo",\n'
+        f'#     "gtlab @ ./{wheel.name}",\n'
+        "# ]\n"
+        "# ///\n\n"
     )
-    if patched == source:
-        print("warning: could not patch the gtlab dependency line", file=sys.stderr)
+    marker = "import marimo"
+    if marker not in source:
+        sys.exit("could not find the marimo import in the app source")
+    patched = source.replace(marker, metadata + marker, 1)
 
     staged = ROOT / "_share_app.py"
     staged.write_text(patched, encoding="utf-8")

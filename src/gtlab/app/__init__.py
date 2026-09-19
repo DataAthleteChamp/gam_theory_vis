@@ -20,4 +20,9 @@ def launch() -> int:
             file=sys.stderr,
         )
         return 1
-    return subprocess.call([sys.executable, "-m", "marimo", "run", str(APP)])
+    # --no-sandbox keeps marimo in the environment this package is installed
+    # into. Without it marimo builds an isolated venv that does not contain
+    # gtlab, and the app cannot import itself.
+    return subprocess.call(
+        [sys.executable, "-m", "marimo", "run", "--no-sandbox", str(APP)]
+    )

@@ -47,7 +47,6 @@ def main(argv: list[str] | None = None) -> int:
         from .app import launch
 
         return launch()
-
     parser.print_help()
     return 1
 

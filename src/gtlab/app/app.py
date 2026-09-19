@@ -3,21 +3,12 @@
 Run it with:  gtlab app       (or)  marimo run src/gtlab/app/app.py
 Edit it with: marimo edit src/gtlab/app/app.py
 
-The block below is PEP 723 script metadata. It is what lets the browser
-(WASM/Pyodide) build of this app install its own dependencies, so a classmate
-can open a URL and run everything with nothing installed. ``scripts/share.py``
-rewrites the gtlab entry to point at the wheel it builds alongside the export.
+Note: there is deliberately no PEP 723 script-metadata block here. It is only
+needed by the browser (WASM) build, and listing this package there by bare name
+makes marimo's sandbox install an unrelated PyPI project that happens to share
+the name. ``scripts/share.py`` injects the correct metadata, pointing at a
+locally built wheel, into a temporary copy at build time.
 """
-
-# /// script
-# requires-python = ">=3.11"
-# dependencies = [
-#     "numpy",
-#     "scipy",
-#     "nashpy==0.0.43",
-#     "gtlab",
-# ]
-# ///
 
 import marimo
 
