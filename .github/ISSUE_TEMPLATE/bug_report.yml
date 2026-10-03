@@ -1,0 +1,75 @@
+name: Bug report
+description: Something is broken, or gtlab printed a number you believe is wrong.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **A wrong number is the highest-priority bug this project can have.**
+        If that is what you are reporting, please fill in the "correct answer"
+        box — it is what lets us turn your report into a regression test.
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of problem is it?
+      options:
+        - gtlab printed a wrong number
+        - A crash or traceback
+        - The interactive app misbehaves
+        - The browser (WASM) demo misbehaves
+        - An explanation is wrong or misleading
+        - Something else
+    validations:
+      required: true
+
+  - type: input
+    id: game
+    attributes:
+      label: Which game, and with what parameters?
+      placeholder: "hawk_dove with C=3.5, or: all of them"
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How do we reproduce it?
+      description: The smallest command or snippet that shows the problem.
+      render: python
+      placeholder: |
+        import gtlab
+        game = gtlab.get("hawk_dove").with_params(C=3.5)
+        print(gtlab.equilibria(game))
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What did gtlab do?
+      description: Paste the exact output or full traceback.
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What is the correct answer, and how do you know?
+      description: >
+        A hand calculation, a textbook, or a lecture note is ideal. If you are
+        not sure what the right answer is, say so — that is still a useful
+        report.
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: gtlab version or commit
+      placeholder: "0.1.0, or the commit SHA"
+
+  - type: input
+    id: python
+    attributes:
+      label: Python version and OS
+      placeholder: "3.12 on macOS 15 — or: Firefox, for the browser demo"

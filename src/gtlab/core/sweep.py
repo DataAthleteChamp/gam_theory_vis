@@ -121,6 +121,7 @@ def find_threshold(
     Assumes the structure differs at the two ends. Returns the parameter value
     where the answer flips, to within floating point.
     """
+
     def label_at(v: float) -> str:
         variant = game.with_params(**{parameter: float(v)})
         return classify(equilibria(variant), variant)

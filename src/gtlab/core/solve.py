@@ -9,9 +9,10 @@ reporting numbers back to the user.
 from __future__ import annotations
 
 import warnings
+from collections.abc import Iterable
 from dataclasses import dataclass
 from fractions import Fraction
-from typing import Iterable, Literal
+from typing import Literal
 
 import numpy as np
 
@@ -56,8 +57,8 @@ class Equilibrium:
         return self.kind == "pure"
 
     def support(self, game: Game) -> tuple[list[str], list[str]]:
-        r = [a for a, p in zip(game.row_actions, self.row) if p > TOL]
-        c = [a for a, p in zip(game.col_actions, self.col) if p > TOL]
+        r = [a for a, p in zip(game.row_actions, self.row, strict=True) if p > TOL]
+        c = [a for a, p in zip(game.col_actions, self.col, strict=True) if p > TOL]
         return r, c
 
     def outcome_values(self, game: Game) -> tuple[float, float]:
@@ -77,11 +78,7 @@ class Equilibrium:
 
 
 def _fmt_mix(dist: np.ndarray, actions: Iterable[str]) -> str:
-    parts = [
-        f"{_pretty_prob(p)} {a}"
-        for a, p in zip(actions, dist)
-        if p > TOL
-    ]
+    parts = [f"{_pretty_prob(p)} {a}" for a, p in zip(actions, dist, strict=True) if p > TOL]
     return " + ".join(parts)
 
 
@@ -127,7 +124,9 @@ def equilibria(game: Game) -> list[Equilibrium]:
                 c = np.asarray(c, dtype=float)
                 if not (np.isfinite(r).all() and np.isfinite(c).all()):
                     continue
-                kind = "pure" if _is_degenerate_pure(r) and _is_degenerate_pure(c) else "mixed"
+                kind: Literal["pure", "mixed"] = (
+                    "pure" if _is_degenerate_pure(r) and _is_degenerate_pure(c) else "mixed"
+                )
                 found.append(Equilibrium(r, c, kind))
     except Exception:
         return pure_equilibria(game)
@@ -326,22 +325,33 @@ def efficiency(game: Game, eqs: list[Equilibrium] | None = None) -> Efficiency:
     """
     social = game.social_cost_matrix()
     optimum = float(social.min())
-    cells = [
-        (int(i), int(j))
-        for i, j in zip(*np.where(social <= optimum + TOL))
-    ]
+    cells = [(int(i), int(j)) for i, j in zip(*np.where(social <= optimum + TOL), strict=True)]
 
     eqs = equilibria(game) if eqs is None else eqs
     if not eqs:
-        return Efficiency(optimum, cells, float("nan"), float("nan"), None, None, False,
-                          "no Nash equilibrium was found")
+        return Efficiency(
+            optimum,
+            cells,
+            float("nan"),
+            float("nan"),
+            None,
+            None,
+            False,
+            "no Nash equilibrium was found",
+        )
 
     costs = [eq.social_cost(game) for eq in eqs]
     best, worst = min(costs), max(costs)
 
     if optimum <= TOL:
         return Efficiency(
-            optimum, cells, best, worst, None, None, False,
+            optimum,
+            cells,
+            best,
+            worst,
+            None,
+            None,
+            False,
             "the best achievable social cost is not strictly positive, so a ratio "
             "would be misleading -- compare the absolute numbers instead",
         )

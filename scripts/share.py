@@ -19,6 +19,7 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+
 ROOT = Path(__file__).resolve().parent.parent
 APP = ROOT / "src" / "gtlab" / "app" / "app.py"
 OUT = ROOT / "site"
@@ -50,8 +51,16 @@ def export(app_path: Path) -> None:
     if OUT.exists():
         shutil.rmtree(OUT)
     run(
-        sys.executable, "-m", "marimo", "export", "html-wasm",
-        str(app_path), "-o", str(OUT), "--mode", "run",
+        sys.executable,
+        "-m",
+        "marimo",
+        "export",
+        "html-wasm",
+        str(app_path),
+        "-o",
+        str(OUT),
+        "--mode",
+        "run",
     )
 
 
@@ -94,13 +103,28 @@ def main() -> int:
         staged.unlink(missing_ok=True)
         staged_wheel.unlink(missing_ok=True)
 
-    if not (OUT / wheel.name).exists():
+    index = OUT / "index.html"
+    if not index.exists():
+        sys.exit("marimo produced no index.html")
+
+    # Newer marimo vendors the wheel into site/public/wheels/ and rewrites the
+    # reference to point there. Older versions expect it beside index.html.
+    # Only copy it to the root when the page actually asks for it there, so we
+    # don't publish a dead 36 KB duplicate.
+    page = index.read_text(encoding="utf-8")
+    vendored = any(OUT.glob(f"public/wheels/{wheel.name}"))
+    if not vendored and not (OUT / wheel.name).exists():
         shutil.copy2(wheel, OUT / wheel.name)
+
+    if wheel.name not in page:
+        sys.exit(f"{index} does not reference {wheel.name}; the build would load no gtlab")
+
     (OUT / ".nojekyll").touch()  # GitHub Pages must not mangle the asset folders
 
     print(f"\n✅ shareable site in {OUT}")
+    print(f"   gtlab wheel: {'vendored in public/wheels' if vendored else 'at site root'}")
     print("   try it:   python -m http.server -d site")
-    print("   publish:  push the 'site' folder to a gh-pages branch")
+    print("   publish:  every push to main deploys it via .github/workflows/pages.yml")
     return 0
 
 

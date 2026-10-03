@@ -1,0 +1,55 @@
+name: Feature request
+description: Suggest a solver, visualisation, or explanation that would help people learn.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What can't you work out right now?
+      description: >
+        Describe the question you are trying to answer, not the feature. "I
+        can't tell which equilibrium the players would actually coordinate on"
+        is more useful than "add equilibrium refinement".
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would you like gtlab to do?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part of the project?
+      options:
+        - A new solver or analysis
+        - A new visualisation
+        - A clearer explanation
+        - CLI
+        - Interactive app / browser demo
+        - Documentation
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: example
+    attributes:
+      label: Can you show the answer on an example?
+      description: >
+        A game where you already know what the output should be makes this far
+        easier to build and to test.
+
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Compatibility
+      description: >
+        The core must stay pure Python so the whole tool can run in a browser
+        under Pyodide/WASM.
+      options:
+        - label: This would not require a dependency that ships binary wheels (or it belongs in an optional extra)
+        - label: I would be willing to help implement it

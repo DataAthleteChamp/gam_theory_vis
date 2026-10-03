@@ -31,8 +31,8 @@ def test_prisoners_dilemma_unique_equilibrium_is_mutual_defection():
 
 def test_prisoners_dilemma_price_of_anarchy_is_4_point_5():
     eff = gtlab.efficiency(gtlab.get("prisoners_dilemma"))
-    assert eff.social_optimum == pytest.approx(4.0)     # both silent: 2 + 2
-    assert eff.worst_nash_cost == pytest.approx(18.0)   # both betray: 9 + 9
+    assert eff.social_optimum == pytest.approx(4.0)  # both silent: 2 + 2
+    assert eff.worst_nash_cost == pytest.approx(18.0)  # both betray: 9 + 9
     assert eff.meaningful
     assert eff.price_of_anarchy == pytest.approx(4.5)
 
@@ -87,6 +87,7 @@ def test_rps_is_zero_sum_with_value_zero():
     value, row, col = gtlab.zero_sum_value(game)
     assert value == pytest.approx(0.0, abs=1e-9)
     assert np.allclose(row, [1 / 3, 1 / 3, 1 / 3], atol=1e-6)
+    assert np.allclose(col, [1 / 3, 1 / 3, 1 / 3], atol=1e-6)
 
 
 # --------------------------------------------------------------------------
@@ -97,7 +98,7 @@ def test_hawk_dove_below_threshold_hawk_dominates(C):
     game = gtlab.get("hawk_dove").with_params(V=10, C=C)
     eqs = gtlab.equilibria(game)
     assert len(eqs) == 1
-    assert np.allclose(eqs[0].row, [1.0, 0.0])   # both fight
+    assert np.allclose(eqs[0].row, [1.0, 0.0])  # both fight
     assert np.allclose(eqs[0].col, [1.0, 0.0])
 
 

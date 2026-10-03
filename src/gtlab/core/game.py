@@ -19,9 +19,9 @@ silently wrong answers, so this module enforces one rule:
 
 from __future__ import annotations
 
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field, replace
 from enum import Enum
-from typing import Callable, Mapping, Sequence
 
 import numpy as np
 
@@ -34,8 +34,8 @@ CellValue = Number | Callable[[Mapping[str, float]], Number]
 class Convention(str, Enum):
     """What the numbers in the table mean."""
 
-    COST = "cost"        # lower is better; players minimise (the course default)
-    PAYOFF = "payoff"    # higher is better; players maximise
+    COST = "cost"  # lower is better; players minimise (the course default)
+    PAYOFF = "payoff"  # higher is better; players maximise
 
     @property
     def better(self) -> str:
@@ -45,7 +45,7 @@ class Convention(str, Enum):
     def symbol(self) -> str:
         return "c" if self is Convention.COST else "u"
 
-    def flip(self) -> "Convention":
+    def flip(self) -> Convention:
         return Convention.PAYOFF if self is Convention.COST else Convention.COST
 
 
@@ -93,7 +93,7 @@ class Game:
         values.update(self._overrides)
         return values
 
-    def with_params(self, **overrides: float) -> "Game":
+    def with_params(self, **overrides: float) -> Game:
         """Return a copy with different parameter values (for sliders)."""
         unknown = set(overrides) - {p.name for p in self.parameters}
         if unknown:
@@ -144,14 +144,11 @@ class Game:
         total = a + b
         return total if self.convention is Convention.COST else -total
 
-    def as_convention(self, convention: Convention) -> "Game":
+    def as_convention(self, convention: Convention) -> Game:
         """Restate the same game in the other convention, negating the table."""
         if convention is self.convention:
             return self
-        flipped = [
-            [(_negate(a), _negate(b)) for (a, b) in row]
-            for row in self.table
-        ]
+        flipped = [[(_negate(a), _negate(b)) for (a, b) in row] for row in self.table]
         return replace(self, table=flipped, convention=convention)
 
     # -- shape helpers ------------------------------------------------------
@@ -178,21 +175,15 @@ class Game:
         if rows == 0 or cols == 0:
             raise ValueError(f"{self.key}: game needs at least one action per player")
         if len(self.table) != rows:
-            raise ValueError(
-                f"{self.key}: table has {len(self.table)} rows but "
-                f"{rows} row actions"
-            )
+            raise ValueError(f"{self.key}: table has {len(self.table)} rows but {rows} row actions")
         for i, row in enumerate(self.table):
             if len(row) != cols:
                 raise ValueError(
-                    f"{self.key}: table row {i} has {len(row)} cells but "
-                    f"{cols} column actions"
+                    f"{self.key}: table row {i} has {len(row)} cells but {cols} column actions"
                 )
             for j, cell in enumerate(row):
                 if len(cell) != 2:
-                    raise ValueError(
-                        f"{self.key}: cell ({i},{j}) must be a (p1, p2) pair"
-                    )
+                    raise ValueError(f"{self.key}: cell ({i},{j}) must be a (p1, p2) pair")
         self.raw_matrices()  # force-resolve every callable to catch bad formulas
 
     def __str__(self) -> str:
@@ -201,5 +192,10 @@ class Game:
 
 def _negate(cell: CellValue) -> CellValue:
     if callable(cell):
-        return lambda params, _f=cell: -float(_f(params))
+        inner = cell
+
+        def negated(params: Mapping[str, float]) -> float:
+            return -float(inner(params))
+
+        return negated
     return -float(cell)

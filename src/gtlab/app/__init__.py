@@ -15,14 +15,11 @@ def launch() -> int:
         import marimo  # noqa: F401
     except ImportError:
         print(
-            "The app needs marimo. Install it with:\n"
-            '    uv pip install -e ".[app]"',
+            'The app needs marimo. Install it with:\n    uv pip install -e ".[app]"',
             file=sys.stderr,
         )
         return 1
     # --no-sandbox keeps marimo in the environment this package is installed
     # into. Without it marimo builds an isolated venv that does not contain
     # gtlab, and the app cannot import itself.
-    return subprocess.call(
-        [sys.executable, "-m", "marimo", "run", "--no-sandbox", str(APP)]
-    )
+    return subprocess.call([sys.executable, "-m", "marimo", "run", "--no-sandbox", str(APP)])

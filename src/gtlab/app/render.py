@@ -15,8 +15,8 @@ import numpy as np
 
 from ..core import Convention, Game, best_response_mask, efficiency, equilibria
 
-P1_COLOUR = "#2563eb"   # blue
-P2_COLOUR = "#d97706"   # amber
+P1_COLOUR = "#2563eb"  # blue
+P2_COLOUR = "#d97706"  # amber
 NE_BG = "#ecfdf5"
 NE_BORDER = "#059669"
 OPT_BORDER = "#7c3aed"  # violet: the socially best cell
@@ -28,7 +28,7 @@ OPT_BORDER = "#7c3aed"  # violet: the socially best cell
 
 def _fmt(x: float) -> str:
     if abs(x - round(x)) < 1e-9:
-        return str(int(round(x)))
+        return str(round(x))
     return f"{x:.4g}".rstrip("0").rstrip(".") if "." in f"{x:.4g}" else f"{x:.4g}"
 
 
@@ -127,8 +127,8 @@ def matrix_html(game: Game, *, show_best_responses: bool = True) -> str:
     return f"""{css}
     <div class="gt-wrap">
       <table class="gt-table">
-        <thead><tr>{''.join(head)}</tr></thead>
-        <tbody>{''.join(body)}</tbody>
+        <thead><tr>{"".join(head)}</tr></thead>
+        <tbody>{"".join(body)}</tbody>
       </table>
       {legend}
     </div>"""
@@ -212,7 +212,7 @@ def regime_html(game: Game, sweep_result, current: float) -> str:
         <b>Where the answer changes</b> as <code>{sweep_result.parameter}</code> varies:</div>
       <div style="position:relative;">{ticks}
         <div style="display:flex;border-radius:5px;overflow:hidden;border:1px solid #e5e7eb;">
-          {''.join(segments)}
+          {"".join(segments)}
         </div>
         <div style="position:absolute;left:{marker:.3f}%;top:-3px;height:calc(100% + 6px);
                     border-left:2px solid #111827;transform:translateX(-1px);"></div>

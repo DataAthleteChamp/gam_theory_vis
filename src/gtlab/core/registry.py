@@ -14,7 +14,7 @@ game and parameter sliders can never leak between sessions.
 
 from __future__ import annotations
 
-from typing import Callable, Iterator
+from collections.abc import Callable, Iterator
 
 from .game import Game
 

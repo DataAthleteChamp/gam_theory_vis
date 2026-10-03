@@ -1,5 +1,10 @@
 # gtlab — a game theory visualiser you can actually learn from
 
+[![CI](https://github.com/DataAthleteChamp/gam_theory_vis/actions/workflows/ci.yml/badge.svg)](https://github.com/DataAthleteChamp/gam_theory_vis/actions/workflows/ci.yml)
+[![Demo](https://img.shields.io/badge/demo-live%20in%20your%20browser-2563eb)](https://DataAthleteChamp.github.io/gam_theory_vis/)
+[![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/licence-MIT-green)](LICENSE)
+
 An interactive tool for **seeing**, **simulating** and **solving** the games from a
 *Game Theory in Electricity Markets* course — Prisoner's Dilemma, Hawk & Dove,
 Rock-Paper-Scissors, War of Attrition, and the generator-bidding auction that
@@ -11,6 +16,11 @@ It answers the questions you actually have:
 - Which actions can I cross out, and in what order?
 - How bad is selfish play? (**Price of Anarchy**)
 - **When does the answer change** if I turn a knob?
+
+### ▶ [Try it in your browser](https://DataAthleteChamp.github.io/gam_theory_vis/) — no install, no server, nothing to break
+
+The entire tool, Python included, runs client-side via WebAssembly. Nothing you
+type leaves your machine.
 
 ---
 
@@ -24,6 +34,12 @@ uv run gtlab app                        # open the visual app
 ```
 
 No `uv`? `python -m venv .venv && .venv/bin/pip install -e ".[app]"` works too.
+
+Install straight from GitHub, without cloning:
+
+```bash
+pip install "gtlab[app] @ git+https://github.com/DataAthleteChamp/gam_theory_vis"
+```
 
 ---
 
@@ -41,16 +57,17 @@ Flip the convention any time:
 
 ```python
 import gtlab
-pd = gtlab.get("prisoners_dilemma")          # stated in prison-years (cost)
-print(pd.convention)                          # Convention.COST
-same_game = pd.as_convention(gtlab.Convention.PAYOFF)   # -> identical answers
+
+pd = gtlab.get("prisoners_dilemma")  # stated in prison-years (cost)
+print(pd.convention)  # Convention.COST
+same_game = pd.as_convention(gtlab.Convention.PAYOFF)  # -> identical answers
 ```
 
 ### 2. Price of Anarchy is a first-class number
 
 ```python
 eff = gtlab.efficiency(gtlab.get("prisoners_dilemma"))
-print(eff.price_of_anarchy)   # 4.5
+print(eff.price_of_anarchy)  # 4.5
 ```
 
 Both suspects betray and serve 9 years each (total 18) when staying silent would
@@ -67,7 +84,7 @@ gets smaller — and when?* Don't guess, bisect:
 
 ```python
 hd = gtlab.get("hawk_dove")
-print(gtlab.find_threshold(hd, "C", 0.5, 12))   # 4.0
+print(gtlab.find_threshold(hd, "C", 0.5, 12))  # 4.0
 ```
 
 > ⚠️ **The sheet's Hawk & Dove is not the textbook one.** It uses
@@ -86,6 +103,7 @@ everywhere — CLI, app, solver, sweeps. No registration list to update.
 ```python
 from gtlab.core import Convention, Game, register
 
+
 @register
 def my_game() -> Game:
     return Game(
@@ -94,10 +112,10 @@ def my_game() -> Game:
         row_actions=["Left", "Right"],
         col_actions=["Left", "Right"],
         table=[
-            [(1, 1), (0, 3)],     # each cell is (player 1, player 2)
+            [(1, 1), (0, 3)],  # each cell is (player 1, player 2)
             [(3, 0), (2, 2)],
         ],
-        convention=Convention.COST,     # or PAYOFF
+        convention=Convention.COST,  # or PAYOFF
         description="What this game is about.",
     )
 ```
@@ -110,8 +128,8 @@ sliders and regime maps for free:
 ```python
 from gtlab.core import Parameter
 
-table=[[(lambda p: p["V"] / 2 - p["C"], ...), ...], ...],
-parameters=(Parameter("C", value=8.0, min=0.0, max=20.0, label="Cost of fighting"),),
+table = ([[(lambda p: p["V"] / 2 - p["C"], ...), ...], ...],)
+parameters = ((Parameter("C", value=8.0, min=0.0, max=20.0, label="Cost of fighting"),),)
 ```
 
 ---
@@ -123,18 +141,19 @@ import gtlab
 
 game = gtlab.get("hawk_dove").with_params(C=8)
 
-gtlab.equilibria(game)            # every Nash equilibrium
-gtlab.best_response_mask(game)    # which cells are best responses
+gtlab.equilibria(game)  # every Nash equilibrium
+gtlab.best_response_mask(game)  # which cells are best responses
 gtlab.iterated_elimination(game)  # dominance, one explained step at a time
-gtlab.efficiency(game)            # social optimum, PoA, PoS
-gtlab.sweep(game, "C", 0.5, 12)   # regimes across a parameter range
-gtlab.summary(game)               # all of the above, in plain English
+gtlab.efficiency(game)  # social optimum, PoA, PoS
+gtlab.sweep(game, "C", 0.5, 12)  # regimes across a parameter range
+gtlab.summary(game)  # all of the above, in plain English
 ```
 
 Run a real electricity auction:
 
 ```python
 from gtlab.games.electricity import lecture_scenarios
+
 for name, result in lecture_scenarios().items():
     print(name, result.clearing_price, result.profit)
 ```
@@ -149,7 +168,8 @@ python -m http.server -d site    # try it at localhost:8000
 ```
 
 `./site` is a fully static folder that runs **the entire tool in the browser**
-via WebAssembly — Python and all. Push it to a `gh-pages` branch and a classmate
+via WebAssembly — Python and all. Every push to `main` deploys it automatically
+to [GitHub Pages](https://DataAthleteChamp.github.io/gam_theory_vis/), so anyone
 opens a URL and starts using it: no Python, no pip, no server, nothing to break.
 
 This is verified, not aspirational: the exported site was loaded in a headless
@@ -173,6 +193,10 @@ computed by Python running client-side.
 Exercise 6 (when to fetch the bed) is a one-player decision, so it lives in
 `gtlab.games.sequential.best_bed_plan()` rather than the matrix catalogue.
 
+> The exercise sheet itself is **not** included — it is the course's material,
+> not mine to redistribute. Every game's numbers, assumptions and answer are
+> written out in the code and its docstrings, so nothing here depends on it.
+
 ---
 
 ## Design notes
@@ -188,13 +212,36 @@ Exercise 6 (when to fetch the bed) is a one-player decision, so it lives in
 ## Testing
 
 ```bash
-uv run pytest -q
+uv run pytest                    # 96 tests
+uv run pytest --cov              # with coverage (currently 95%)
 ```
 
 The tests are regression tests against **known** answers: PD's Price of Anarchy
-is 4.5, RPS's equilibrium is (1/3, 1/3, 1/3) with value 0, and Hawk & Dove
-bifurcates at C = 4 with `p(Hawk) = 4/C`.
+is 4.5, RPS's equilibrium is (1/3, 1/3, 1/3) with value 0, Hawk & Dove
+bifurcates at C = 4 with `p(Hawk) = 4/C`, and the lecture's pivotal generator
+lifts the clearing price from 70 to 100 by bidding above its cost.
+
+The same four gates run in CI on Python 3.11–3.13 across Linux, macOS and
+Windows:
+
+```bash
+uv run ruff check .        # lint
+uv run ruff format --check .
+uv run mypy                # types
+uv run pytest              # tests
+```
+
+## Contributing
+
+Issues and pull requests are welcome — a clearer explanation counts as much as a
+new solver. Start with [CONTRIBUTING.md](CONTRIBUTING.md), which covers the one
+rule that must not break (cost vs payoff), how to add a game in 20 lines, and
+why the core has to stay browser-safe.
+
+- [Changelog](CHANGELOG.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Security policy](SECURITY.md)
 
 ## Licence
 
-MIT — use it, fork it, teach with it.
+MIT — use it, fork it, teach with it. See [LICENSE](LICENSE).

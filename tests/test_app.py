@@ -33,7 +33,7 @@ def test_launcher_disables_the_sandbox():
 def test_share_script_pins_the_local_wheel_not_the_pypi_name():
     """The browser build must install our wheel, never a bare 'gtlab'."""
     source = SHARE.read_text(encoding="utf-8")
-    assert 'gtlab @ ./' in source
+    assert "gtlab @ ./" in source
     assert '"gtlab",' not in source
 
 

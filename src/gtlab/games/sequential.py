@@ -18,7 +18,7 @@ from ..core import Convention, Game, Parameter, register
 # --------------------------------------------------------------------------
 @dataclass(frozen=True)
 class BedPlan:
-    day: int | None          # None means "never; let the partner bring it"
+    day: int | None  # None means "never; let the partner bring it"
     total_cost: float
     pain_cost: float
     trip_cost: float
@@ -111,16 +111,22 @@ def war_of_attrition_outcome(v1: float, v2: float, t1: float, t2: float) -> Attr
     """
     if abs(t1 - t2) < 1e-12:
         return AttritionResult(
-            None, t1, (v1 / 2 - t1, v2 / 2 - t1),
+            None,
+            t1,
+            (v1 / 2 - t1, v2 / 2 - t1),
             "Both conceded at the same moment, so they split the object.",
         )
     if t1 < t2:
         return AttritionResult(
-            "Player 2", t1, (-t1, v2 - t1),
+            "Player 2",
+            t1,
+            (-t1, v2 - t1),
             "Player 1 gave up first, so Player 2 takes the object.",
         )
     return AttritionResult(
-        "Player 1", t2, (v1 - t2, -t2),
+        "Player 1",
+        t2,
+        (v1 - t2, -t2),
         "Player 2 gave up first, so Player 1 takes the object.",
     )
 
@@ -156,9 +162,7 @@ def war_of_attrition_equilibria(v1: float, v2: float) -> list[str]:
     return lines
 
 
-def attrition_payoff_grid(
-    v1: float, v2: float, times: np.ndarray
-) -> tuple[np.ndarray, np.ndarray]:
+def attrition_payoff_grid(v1: float, v2: float, times: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Payoff surfaces over a grid of concession times, for plotting."""
     n = len(times)
     p1 = np.empty((n, n))

@@ -31,7 +31,16 @@ advanced = [
 ]
 dev = [
     "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "ruff>=0.6",
+    "mypy>=1.11",
 ]
+
+[project.urls]
+Homepage = "https://github.com/DataAthleteChamp/gam_theory_vis"
+Repository = "https://github.com/DataAthleteChamp/gam_theory_vis"
+Issues = "https://github.com/DataAthleteChamp/gam_theory_vis/issues"
+Demo = "https://DataAthleteChamp.github.io/gam_theory_vis/"
 
 [project.scripts]
 gtlab = "gtlab.cli:main"
@@ -45,3 +54,52 @@ packages = ["src/gtlab"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "-q --strict-markers --strict-config"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W",   # pycodestyle
+    "F",        # pyflakes
+    "I",        # isort
+    "UP",       # pyupgrade
+    "B",        # flake8-bugbear
+    "C4",       # comprehensions
+    "SIM",      # simplify
+    "RUF",      # ruff-specific
+]
+ignore = [
+    "E501",    # long lines are handled by the formatter
+    "B008",    # marimo's UI element defaults are call-in-default by design
+    "UP042",   # Convention is `(str, Enum)` on purpose: StrEnum changes what
+               # `str(member)` returns, which would alter printed output
+]
+
+# `×` is intentional in rendered output ("Price of Anarchy 4.5×").
+allowed-confusables = ["×", "−", "’"]
+
+[tool.ruff.lint.per-file-ignores]
+# marimo notebooks are a cell graph: each cell re-declares its imports and
+# returns names for the next cell, which linters read as shadowing/unused.
+"src/gtlab/app/app.py" = ["B018", "F841", "RUF005"]
+
+[tool.mypy]
+python_version = "3.11"
+files = ["src/gtlab"]
+ignore_missing_imports = true
+warn_redundant_casts = true
+warn_unused_ignores = false
+no_implicit_optional = true
+
+[[tool.mypy.overrides]]
+# The app module is a marimo cell graph, not ordinary Python control flow.
+module = "gtlab.app.app"
+ignore_errors = true
+
+[tool.coverage.run]
+source = ["src/gtlab"]
+omit = ["src/gtlab/app/app.py"]

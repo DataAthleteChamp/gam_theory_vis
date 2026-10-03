@@ -20,7 +20,7 @@ from ..core import Convention, Game, Parameter, register
 class Generator:
     name: str
     marginal_cost: float  # EUR/MWh, the true cost of producing
-    capacity: float       # MW available
+    capacity: float  # MW available
 
 
 @dataclass(frozen=True)
@@ -80,9 +80,7 @@ def clear_uniform_price(
         price = price_cap
         marginal_unit = None
 
-    profit = {
-        g.name: (price - g.marginal_cost) * dispatched[g.name] for g in generators
-    }
+    profit = {g.name: (price - g.marginal_cost) * dispatched[g.name] for g in generators}
     return Dispatch(
         clearing_price=price,
         dispatched=dispatched,

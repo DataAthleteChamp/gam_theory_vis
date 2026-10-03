@@ -10,6 +10,7 @@ Quick start::
 Every game is registered by importing :mod:`gtlab.games`, which happens here.
 """
 
+from . import games  # noqa: F401  (registers the catalogue)
 from .core import (
     Convention,
     Game,
@@ -35,7 +36,6 @@ from .core import (
     sweep,
     zero_sum_value,
 )
-from . import games  # noqa: F401  (registers the catalogue)
 
 __version__ = "0.1.0"
 
@@ -43,6 +43,7 @@ __all__ = [
     "Convention",
     "Game",
     "Parameter",
+    "__version__",
     "all_games",
     "best_response_mask",
     "catalogue",
@@ -63,5 +64,4 @@ __all__ = [
     "survivors",
     "sweep",
     "zero_sum_value",
-    "__version__",
 ]

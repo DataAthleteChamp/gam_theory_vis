@@ -95,7 +95,9 @@ def explain_dominance(game: Game, *, strict: bool = True) -> str:
 
 def explain_efficiency(game: Game, eff: Efficiency | None = None) -> str:
     eff = efficiency(game) if eff is None else eff
-    unit = "total cost" if game.convention is Convention.COST else "total cost (= minus total payoff)"
+    unit = (
+        "total cost" if game.convention is Convention.COST else "total cost (= minus total payoff)"
+    )
 
     lines = [
         f"The best possible outcome for the two players together has {unit} "
@@ -116,9 +118,10 @@ def explain_efficiency(game: Game, eff: Efficiency | None = None) -> str:
             f"Selfish play is {eff.price_of_anarchy:.4g}× worse than the best the players "
             f"could have done together. A value of 1 would mean selfishness costs nothing."
         )
-        if eff.price_of_stability is not None and abs(
-            eff.price_of_stability - eff.price_of_anarchy
-        ) > 1e-9:
+        if (
+            eff.price_of_stability is not None
+            and abs(eff.price_of_stability - eff.price_of_anarchy) > 1e-9
+        ):
             lines.append(
                 f"The Price of Stability is {eff.price_of_stability:.4g}, using the *best* "
                 f"equilibrium instead of the worst."
@@ -135,10 +138,14 @@ def explain_zero_sum(game: Game) -> str | None:
     result = zero_sum_value(game)
     if result is None:
         return None
-    value, row, col = result
-    sign = "in payoff terms" if game.convention is Convention.PAYOFF else "in payoff terms (= minus cost)"
+    value, _row, _col = result
+    sign = (
+        "in payoff terms"
+        if game.convention is Convention.PAYOFF
+        else "in payoff terms (= minus cost)"
+    )
     lines = [
-        f"This is a **zero-sum** game: whatever one player gains, the other loses.",
+        "This is a **zero-sum** game: whatever one player gains, the other loses.",
         f"Its value is **{value:.3g}** {sign} to {game.players[0]}.",
     ]
     if abs(value) < 1e-9:

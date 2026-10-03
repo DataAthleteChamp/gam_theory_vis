@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Question or idea
+    url: https://github.com/DataAthleteChamp/gam_theory_vis/discussions
+    about: Ask how something works, or talk through an idea before building it.
+  - name: Try the tool in your browser
+    url: https://DataAthleteChamp.github.io/gam_theory_vis/
+    about: The whole tool, running client-side. Nothing to install.
+  - name: Report a security vulnerability
+    url: https://github.com/DataAthleteChamp/gam_theory_vis/security/advisories/new
+    about: Please report security issues privately, not as a public issue.

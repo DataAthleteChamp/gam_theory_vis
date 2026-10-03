@@ -1,0 +1,69 @@
+name: Suggest a game
+description: Propose a game to add to the catalogue.
+labels: ["new-game"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Adding a game is about 20 lines — see
+        [CONTRIBUTING.md](../blob/main/CONTRIBUTING.md#adding-a-game).
+        Pull requests are very welcome; this template is for proposing one you
+        would like to see.
+
+  - type: input
+    id: name
+    attributes:
+      label: Name of the game
+      placeholder: "Volunteer's Dilemma"
+    validations:
+      required: true
+
+  - type: textarea
+    id: payoffs
+    attributes:
+      label: The payoff or cost table
+      description: >
+        Each cell as `(player 1, player 2)`. If it is parametric, give the
+        formula and the parameter ranges.
+      render: text
+      placeholder: |
+        Actions: Volunteer, Ignore
+                    Volunteer   Ignore
+        Volunteer   (1, 1)      (1, 0)
+        Ignore      (0, 1)      (10, 10)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: convention
+    attributes:
+      label: Are those costs or payoffs?
+      description: Costs are minimised; payoffs are maximised. Getting this wrong flips every answer.
+      options:
+        - Cost (lower is better)
+        - Payoff (higher is better)
+    validations:
+      required: true
+
+  - type: textarea
+    id: answer
+    attributes:
+      label: What is the known answer?
+      description: >
+        Equilibria, dominance, Price of Anarchy — whatever you know. Every game
+        in the catalogue ships with a test against a known answer, so this is
+        the part that makes the game addable.
+    validations:
+      required: true
+
+  - type: input
+    id: source
+    attributes:
+      label: Source
+      description: Textbook, paper, or lecture it comes from. Please do not upload copyrighted course material.
+      placeholder: "Osborne & Rubinstein, A Course in Game Theory, §2.4"
+
+  - type: textarea
+    id: why
+    attributes:
+      label: What does it teach that the current catalogue doesn't?

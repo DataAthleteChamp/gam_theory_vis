@@ -15,7 +15,11 @@ def main(argv: list[str] | None = None) -> int:
     solve = sub.add_parser("solve", help="solve a game and explain it")
     solve.add_argument("game", help="game key, e.g. prisoners_dilemma")
     solve.add_argument(
-        "-p", "--param", action="append", default=[], metavar="NAME=VALUE",
+        "-p",
+        "--param",
+        action="append",
+        default=[],
+        metavar="NAME=VALUE",
         help="override a parameter, e.g. -p C=3",
     )
 

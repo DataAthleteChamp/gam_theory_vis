@@ -1,0 +1,59 @@
+name: Deploy demo to GitHub Pages
+
+# Builds the zero-install WebAssembly build of the app (scripts/share.py) and
+# publishes it, so anyone can use the tool from a URL with nothing installed.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never run two deploys at once, but let a running one finish so a half-built
+# site is not published.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install project with app extras
+        run: uv sync --extra app
+
+      - name: Build the static WASM site
+        run: uv run python scripts/share.py
+
+      - name: Check the export actually produced a page
+        run: |
+          test -f site/index.html || { echo "::error::site/index.html missing"; exit 1; }
+          test -f site/.nojekyll || { echo "::error::site/.nojekyll missing"; exit 1; }
+          ls -la site
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
