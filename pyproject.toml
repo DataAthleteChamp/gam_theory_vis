@@ -17,7 +17,7 @@ dependencies = [
 [project.optional-dependencies]
 # Everything needed to run the interactive app locally.
 app = [
-    "marimo>=0.9",
+    "marimo>=0.25.0",
     "matplotlib>=3.8",
 ]
 # Iterated-game tournaments (pure python, browser safe).
