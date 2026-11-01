@@ -17,7 +17,7 @@ dependencies = [
 [project.optional-dependencies]
 # Everything needed to run the interactive app locally.
 app = [
-    "marimo>=0.9",
+    "marimo>=0.25.2",
     "matplotlib>=3.8",
 ]
 # Iterated-game tournaments (pure python, browser safe).
@@ -30,10 +30,10 @@ advanced = [
     "pygambit>=16.1",
 ]
 dev = [
-    "pytest>=8.0",
+    "pytest>=9.2.0",
     "pytest-cov>=5.0",
-    "ruff>=0.6",
-    "mypy>=1.11",
+    "ruff>=0.17.3",
+    "mypy>=2.4.1",
 ]
 
 [project.urls]
